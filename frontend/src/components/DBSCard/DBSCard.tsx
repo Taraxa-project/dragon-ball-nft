@@ -7,31 +7,39 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
-import { DragonBallSuperCard, DragonBallSuperNFT } from "../../types";
+import { DragonBallSuperNFT } from "../../types";
 import { useStyles } from "./DBSCard.styles";
 import { fullIpfsUrl, shortenAddress } from "../../utils";
+import { MintedNFT, useToken, useTokenURI } from "../../hooks";
+import { BigNumber } from "ethers";
 
-export const DBSCard: FC<DragonBallSuperCard> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  id,
-  uri,
-  accountAddress,
-}) => {
+export const DBSCard: FC<MintedNFT> = ({
+  tokenId,
+  seller,
+  price,
+  forSale,
+}: MintedNFT) => {
   const [dbsNft, setDbsNft] = useState<DragonBallSuperNFT>();
+  const { tokenURI } = useTokenURI(BigNumber.from(tokenId));
   const classes = useStyles();
+  const dbsTokenInfo = useToken();
 
   useEffect(() => {
     const fetchUri = async () => {
-      const fullUrl = fullIpfsUrl(uri);
-      const result = await fetch(fullUrl);
-      const nftResult = await result.json();
-      setDbsNft({
-        ...nftResult,
-        fileUrl: fullIpfsUrl(nftResult.fileUrl),
-      });
+      if (tokenURI) {
+        const fullUrl = fullIpfsUrl(tokenURI);
+        const result = await fetch(fullUrl);
+        const nftResult = await result.json();
+        setDbsNft({
+          ...nftResult,
+          price,
+          forSale,
+          fileUrl: fullIpfsUrl(nftResult.fileUrl),
+        });
+      }
     };
     fetchUri();
-  }, [uri]);
+  }, [tokenURI]);
 
   return (
     <Box
@@ -58,16 +66,21 @@ export const DBSCard: FC<DragonBallSuperCard> = ({
           <Typography variant="body2" color="text.secondary">
             {dbsNft?.message}
           </Typography>
+          {dbsTokenInfo && dbsNft?.price && (
+            <Typography variant="body2" color="text.secondary">
+              Price {dbsNft.price.toString()} {dbsTokenInfo.symbol}
+            </Typography>
+          )}
         </CardContent>
         <CardActions>
-          {accountAddress && (
+          {seller && (
             <Typography
               gutterBottom
               variant="body2"
               color="primary"
               component="div"
             >
-              Owned by {shortenAddress(accountAddress)}
+              Owned by {shortenAddress(seller)}
             </Typography>
           )}
         </CardActions>

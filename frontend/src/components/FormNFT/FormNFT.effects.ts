@@ -3,17 +3,13 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import * as yup from "yup";
-import { ipfsClient, tokenAddress } from "../../constants";
-import {
-  useMintItem,
-  useMintPrice,
-  useConnection,
-  useTokenBalance,
-} from "../../hooks";
-import { BigNumber } from "ethers";
+import { ipfsClient } from "../../constants";
+import { useMintItem } from "../../hooks";
 
 export interface IMintMetadata {
   name: string;
+  price: number;
+  listForSale: boolean;
   message: string;
   fileUrl: string;
 }
@@ -21,18 +17,15 @@ export interface IMintMetadata {
 const FILE_MAX_SIZE = 5 * 1000 * 1024; // 5mb
 
 export const useFormNFTEffects = () => {
-  const { account } = useConnection();
-
   const [uploading, setIsUploading] = useState<boolean>(false);
   const [ipfsFileUrl, setIpfsFileUrl] = useState<string>("");
   const { state: mintState, send: mintSend } = useMintItem();
-  const { mintPrice } = useMintPrice();
-  const { balance } = useTokenBalance(tokenAddress);
-  const [hasEnoughTokens, setHasEnoughTokens] = useState<boolean>();
   const [isMinting, setIsMinting] = useState(false);
 
   const defaultValues: IMintMetadata = {
     name: "",
+    price: 0,
+    listForSale: true,
     message: "",
     fileUrl: "",
   };
@@ -40,6 +33,8 @@ export const useFormNFTEffects = () => {
   const validationSchema = yup
     .object({
       name: yup.string().required("Name is required").label("Name"),
+      price: yup.number().required("Price is required").label("Price"),
+      listForSale: yup.boolean().label("List for sale"),
       message: yup.string().required("Message is required").label("Message"),
       fileUrl: yup.string().required("Image is required").label("File"),
     })
@@ -63,12 +58,6 @@ export const useFormNFTEffects = () => {
   }, [isSubmitSuccessful, reset]);
 
   useEffect(() => {
-    if (balance && mintPrice !== undefined && mintPrice !== null) {
-      setHasEnoughTokens(balance.gte(BigNumber.from(mintPrice)));
-    }
-  }, [account, mintPrice, balance]);
-
-  useEffect(() => {
     setIsMinting(mintState.status === "Mining");
   }, [mintState]);
 
@@ -87,7 +76,7 @@ export const useFormNFTEffects = () => {
     };
     const uploaded = await ipfsClient.add(JSON.stringify(mintItem));
     reset();
-    return mintSend(`${uploaded.path}`);
+    return mintSend(`${uploaded.path}`, data.price, data.listForSale);
   };
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +127,5 @@ export const useFormNFTEffects = () => {
     onFileChange,
     uploading,
     isMinting,
-    hasEnoughTokens,
   };
 };

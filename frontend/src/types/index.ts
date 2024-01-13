@@ -1,2 +1,1 @@
-export * from './DragonBallSuperCard';
-export * from './DragonBallSuperNFT';
+export * from "./DragonBallSuperNFT";

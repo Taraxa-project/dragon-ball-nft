@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import { Control, Controller } from 'react-hook-form';
-import { InputProps, TextField } from '@mui/material';
-import { checkMethod } from '../../../utils';
+import React, { FC } from "react";
+import { Control, Controller } from "react-hook-form";
+import { InputProps, TextField } from "@mui/material";
+import { checkMethod } from "../../../utils";
 
 export interface FormInputTextProps {
   name: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>;
   label: string;
-  type: 'text' | 'number' | 'email' | 'password' | 'tel' | 'file';
+  type: "text" | "number" | "email" | "password" | "tel" | "file";
   className?: string;
   valueChanged?: () => void;
   defaultValue?: string | number;
@@ -33,7 +33,7 @@ export const FormInputText: FC<FormInputTextProps> = ({
 }) => {
   return (
     <Controller
-      defaultValue={defaultValue || ''}
+      defaultValue={defaultValue || ""}
       name={name}
       control={control}
       render={({
@@ -46,7 +46,7 @@ export const FormInputText: FC<FormInputTextProps> = ({
           label={label}
           value={value}
           type={type}
-          variant='outlined'
+          variant="outlined"
           className={`${className}`}
           onBlur={onBlur}
           onChange={(e) => {

@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { Mint } from "../Mint";
 import { ledgerAddress } from "../../constants";
 import { LoadingText } from "../LoadingText";
 import { FormNFT } from "../FormNFT";
@@ -59,7 +58,7 @@ export const MintContainer: FC = () => {
         </Paper>
       ) : (
         <Box>
-          {nftBalance && nftBalance.toNumber() > 0 ? <Mint /> : <FormNFT />}
+          <FormNFT />
         </Box>
       )}
     </Box>

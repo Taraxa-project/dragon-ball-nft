@@ -1,10 +1,43 @@
 import { Box, Paper, Typography } from "@mui/material";
-import React, { FC } from "react";
-import { useMintedCount } from "../../hooks";
-import { DBSCardContainer } from "../DBSCardContainer";
+import React, { useEffect, useState } from "react";
+import {
+  MintedNFT,
+  useGetAllNFTsForSale,
+  useGetNft,
+  useMintedCount,
+} from "../../hooks";
+import { DBSCard } from "../DBSCard";
 
-export const DBSCardList: FC = () => {
+export const DBSCardList = ({ owner }: { owner: boolean }) => {
   const { mintedCount } = useMintedCount();
+  const { nftsForSale } = useGetAllNFTsForSale();
+  const fetchNft = useGetNft();
+  const [nfts, setNfts] = useState<MintedNFT[]>([]);
+  console.log("🚀 ~ nfts:", nfts);
+  console.log("🚀 ~ nftsForSale:", nftsForSale);
+
+  useEffect(() => {
+    console.log("This is triggered twice");
+    const array = owner ? nftsForSale : Array.from(Array(mintedCount).keys());
+    const fetchAllNfts = async () => {
+      const newNfts = await Promise.all(
+        array.map(async (id) => {
+          const fetched = await fetchNft(id);
+          if (fetched) {
+            return fetched;
+          }
+        })
+      );
+      const filteredNfts = newNfts.filter((nft) => nft !== undefined);
+      console.log("🚀 ~ fetchAllNfts ~ filteredNfts:", filteredNfts);
+      if (filteredNfts.length > 0) {
+        setNfts(filteredNfts as MintedNFT[]);
+      }
+    };
+    if (array?.length > 0) {
+      fetchAllNfts();
+    }
+  }, [nftsForSale, mintedCount]);
 
   return (
     <Paper
@@ -21,7 +54,7 @@ export const DBSCardList: FC = () => {
         padding: "40px",
       }}
     >
-      {!mintedCount ? (
+      {nfts.length === 0 ? (
         <Typography>There are no DBS cards minted yet</Typography>
       ) : (
         <div>
@@ -33,9 +66,9 @@ export const DBSCardList: FC = () => {
             justifyContent="start"
             gap="10px"
           >
-            {Array.from(Array(mintedCount).keys()).map((tokenIndex: number) => (
-              <Box key={`dbs-card-container-${tokenIndex}`}>
-                <DBSCardContainer tokenIndex={tokenIndex} />
+            {nfts.map((nft: MintedNFT) => (
+              <Box key={`dbs-card-container-${nft.tokenId}`}>
+                <DBSCard {...nft} />
               </Box>
             ))}
           </Box>
