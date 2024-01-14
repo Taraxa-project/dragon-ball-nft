@@ -115,7 +115,7 @@ export const DBSCard: FC<MintedNFT> = ({
               <Button
                 variant="contained"
                 type="button"
-                color="secondary"
+                color="primary"
                 onClick={() => {
                   listNFTForSale(tokenId);
                 }}
