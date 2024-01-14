@@ -112,15 +112,20 @@ contract DragonBallSuperLedger is
         return _tokenIdCounter.current();
     }
 
-    function listNFTForSale(uint256 tokenId, uint256 price) public {
+    function listNFTForSale(uint256 tokenId) public {
         require(
             ownerOf(tokenId) == msg.sender,
             "Only NFT owner can list it for sale"
         );
         require(!_saleItems[tokenId].forSale, "NFT already listed for sale");
 
-        _saleItems[tokenId] = NFTSaleItem(tokenId, msg.sender, price, true);
-        emit NFTListedForSale(tokenId, msg.sender, price);
+        _saleItems[tokenId] = NFTSaleItem(
+            tokenId,
+            msg.sender,
+            _saleItems[tokenId].price,
+            true
+        );
+        emit NFTListedForSale(tokenId, msg.sender, _saleItems[tokenId].price);
     }
 
     function buyNFT(uint256 tokenId) public {
@@ -132,11 +137,20 @@ contract DragonBallSuperLedger is
         );
         require(item.seller != msg.sender, "Seller cannot buy their own NFT");
 
+        address originalSeller = item.seller;
+
+        // Transfer community tokens from buyer to seller
         communityToken.transferFrom(msg.sender, item.seller, item.price);
-        item.forSale = false;
+
+        // Transfer the ownership of the NFT from seller to buyer
         _transfer(item.seller, msg.sender, tokenId);
 
-        emit NFTPurchased(tokenId, msg.sender, item.seller, item.price);
+        // Update the sale status of the NFT
+        item.forSale = false;
+        item.seller = msg.sender;
+
+        // Emit the purchase event
+        emit NFTPurchased(tokenId, msg.sender, originalSeller, item.price);
     }
 
     function getSaleItem(

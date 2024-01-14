@@ -1,6 +1,6 @@
 export const tokenAddress: string =
   `${process.env.REACT_APP_TOKEN_ADDRESS}` ||
-  "0x46e5cF315f17846933d7B2C7Fd09e369215574E3";
+  "0x4077078c347E5e39e36e35Cc87F3A5905fA09723";
 export const ledgerAddress: string =
   `${process.env.REACT_APP_LEDGER_ADDRESS}` ||
-  "0x16aA2127848bbD1DF239D3c31fF46a58dd282c4c";
+  "0xDa3Bbdff34ADf71b4d4aE061E082dB291201437E";

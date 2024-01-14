@@ -13,11 +13,8 @@ export const DBSCardList = ({ owner }: { owner: boolean }) => {
   const { nftsForSale } = useGetAllNFTsForSale();
   const fetchNft = useGetNft();
   const [nfts, setNfts] = useState<MintedNFT[]>([]);
-  console.log("🚀 ~ nfts:", nfts);
-  console.log("🚀 ~ nftsForSale:", nftsForSale);
 
   useEffect(() => {
-    console.log("This is triggered twice");
     const array = owner ? nftsForSale : Array.from(Array(mintedCount).keys());
     const fetchAllNfts = async () => {
       const newNfts = await Promise.all(
@@ -29,7 +26,6 @@ export const DBSCardList = ({ owner }: { owner: boolean }) => {
         })
       );
       const filteredNfts = newNfts.filter((nft) => nft !== undefined);
-      console.log("🚀 ~ fetchAllNfts ~ filteredNfts:", filteredNfts);
       if (filteredNfts.length > 0) {
         setNfts(filteredNfts as MintedNFT[]);
       }

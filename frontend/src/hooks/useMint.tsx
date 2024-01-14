@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useContracts } from "./useContracts";
-import { BigNumber } from "ethers";
+import { ethers } from "ethers";
 
 export const useMint = () => {
   const { ledgerContract } = useContracts();
@@ -13,7 +13,8 @@ export const useMint = () => {
         return;
       }
       try {
-        const tx = await ledgerContract.mint(url, price, listForSale);
+        const priceInWei = ethers.utils.parseUnits(price.toString(), "ether");
+        const tx = await ledgerContract.mint(url, priceInWei, listForSale);
         setState({ status: "Mining", error: "" });
         await tx.wait();
         setState({ status: "Success", error: "" });

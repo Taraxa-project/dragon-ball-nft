@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -10,8 +11,15 @@ import React, { FC, useEffect, useState } from "react";
 import { DragonBallSuperNFT } from "../../types";
 import { useStyles } from "./DBSCard.styles";
 import { fullIpfsUrl, shortenAddress } from "../../utils";
-import { MintedNFT, useToken, useTokenURI } from "../../hooks";
-import { BigNumber } from "ethers";
+import {
+  MintedNFT,
+  useBuyNFT,
+  useConnection,
+  useListNFTForSale,
+  useToken,
+  useTokenURI,
+} from "../../hooks";
+import { BigNumber, utils } from "ethers";
 
 export const DBSCard: FC<MintedNFT> = ({
   tokenId,
@@ -23,6 +31,10 @@ export const DBSCard: FC<MintedNFT> = ({
   const { tokenURI } = useTokenURI(BigNumber.from(tokenId));
   const classes = useStyles();
   const dbsTokenInfo = useToken();
+  const { account } = useConnection();
+  const isNotOwner = account?.toLowerCase() !== seller.toLowerCase();
+  const { buyNFT, state } = useBuyNFT();
+  const { listNFTForSale } = useListNFTForSale();
 
   useEffect(() => {
     const fetchUri = async () => {
@@ -68,11 +80,10 @@ export const DBSCard: FC<MintedNFT> = ({
           </Typography>
           {dbsTokenInfo && dbsNft?.price && (
             <Typography variant="body2" color="text.secondary">
-              Price {dbsNft.price.toString()} {dbsTokenInfo.symbol}
+              Price {utils.formatEther(dbsNft.price.toString())}{" "}
+              {dbsTokenInfo.symbol}
             </Typography>
           )}
-        </CardContent>
-        <CardActions>
           {seller && (
             <Typography
               gutterBottom
@@ -82,6 +93,36 @@ export const DBSCard: FC<MintedNFT> = ({
             >
               Owned by {shortenAddress(seller)}
             </Typography>
+          )}
+        </CardContent>
+        <CardActions>
+          {isNotOwner && tokenId && forSale && (
+            <Box>
+              <Button
+                variant="contained"
+                type="button"
+                color="secondary"
+                onClick={() => {
+                  buyNFT(tokenId);
+                }}
+              >
+                Buy
+              </Button>
+            </Box>
+          )}
+          {!isNotOwner && tokenId && !forSale && (
+            <Box>
+              <Button
+                variant="contained"
+                type="button"
+                color="secondary"
+                onClick={() => {
+                  listNFTForSale(tokenId);
+                }}
+              >
+                List for Sale
+              </Button>
+            </Box>
           )}
         </CardActions>
       </Card>

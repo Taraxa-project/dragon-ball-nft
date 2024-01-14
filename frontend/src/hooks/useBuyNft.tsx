@@ -22,30 +22,45 @@ export const useBuyNFT = () => {
 
       try {
         // First, get the price of the NFT
-        const item = await ledgerContract.getSaleItem(tokenId);
-        const price = item.price;
+        const item = await ledgerContract.getSaleItem(BigNumber.from(tokenId));
+        if (!item || !item.price) {
+          setState({
+            status: "Fail",
+            error: "Failed to fetch NFT details or price is not set",
+          });
+          return;
+        }
+        const priceInWei = ethers.utils.parseUnits(
+          item.price.toString(),
+          "ether"
+        );
 
         // Then, ensure the user has approved the contract to spend the tokens
-        if (BigNumber.from(allowance).lt(price)) {
+        if (BigNumber.from(allowance).lt(priceInWei)) {
           // If not enough tokens are approved, prompt the user to approve them
-          const approvalTx: ethers.providers.TransactionReceipt | Error =
-            await tokenContract.approve(ledgerContract.address, price);
-          if (approvalTx instanceof Error) {
-            throw approvalTx;
-          }
+          setState({ status: "Fail", error: "Not enough tokens" });
+        }
+        const approvalTx = await tokenContract.approve(
+          ledgerContract.address,
+          item.price
+        );
+        if (approvalTx instanceof Error) {
+          throw approvalTx;
         }
 
-        // Proceed to buy the NFT
-        const tx = await ledgerContract.buyNFT(tokenId);
-        setState({ status: "Mining", error: "" });
-        await tx.wait();
-        setState({ status: "Success", error: "" });
+        if (approvalTx) {
+          approvalTx.wait();
+          const tx = await ledgerContract.buyNFT(tokenId);
+          setState({ status: "Mining", error: "" });
+          await tx.wait();
+          setState({ status: "Success", error: "" });
+        }
       } catch (error: any) {
         console.error(error);
         setState({ status: "Fail", error: error.message });
       }
     },
-    [ledgerContract, tokenContract]
+    [ledgerContract, tokenContract, allowance, allowanceError]
   );
 
   return { buyNFT, state };
