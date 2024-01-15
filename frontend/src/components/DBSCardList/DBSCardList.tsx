@@ -15,7 +15,7 @@ export const DBSCardList = ({ owner }: { owner: boolean }) => {
   const [nfts, setNfts] = useState<MintedNFT[]>([]);
 
   useEffect(() => {
-    const array = owner ? nftsForSale : Array.from(Array(mintedCount).keys());
+    const array = owner ? Array.from(Array(mintedCount).keys()) : nftsForSale;
     const fetchAllNfts = async () => {
       const newNfts = await Promise.all(
         array.map(async (id) => {
@@ -54,7 +54,14 @@ export const DBSCardList = ({ owner }: { owner: boolean }) => {
         <Typography>There are no DBS cards minted yet</Typography>
       ) : (
         <div>
-          <Typography>All the minted NFTs</Typography>
+          <Typography
+            variant="h2"
+            color="secondary"
+            fontWeight="bold"
+            fontStyle="uppercase"
+          >
+            All available NFTs
+          </Typography>
           <Box
             display="flex"
             flexDirection="row"
