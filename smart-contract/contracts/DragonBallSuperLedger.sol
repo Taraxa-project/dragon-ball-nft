@@ -170,6 +170,7 @@ contract DragonBallSuperLedger is
         );
 
         _saleItems[tokenId].price = newPriceInCommunityTokens;
+        emit NFTListedForSale(tokenId, msg.sender, newPriceInCommunityTokens);
     }
 
     function getAllNFTsForSale() public view returns (uint256[] memory) {
