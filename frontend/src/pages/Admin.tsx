@@ -1,10 +1,12 @@
 import React, { FC } from "react";
-import { TestDapp } from "../components";
+import { DBSCardList, MintContainer, TokenDetails } from "../components";
 
 export const Admin: FC = () => {
   return (
     <>
-      <TestDapp />
+      <TokenDetails />
+      <MintContainer />
+      <DBSCardList owner={true} />
     </>
   );
 };

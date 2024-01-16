@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -7,31 +8,50 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useEffect, useState } from "react";
-import { DragonBallSuperCard, DragonBallSuperNFT } from "../../types";
+import { DragonBallSuperNFT } from "../../types";
 import { useStyles } from "./DBSCard.styles";
 import { fullIpfsUrl, shortenAddress } from "../../utils";
+import {
+  MintedNFT,
+  useBuyNFT,
+  useConnection,
+  useListNFTForSale,
+  useToken,
+  useTokenURI,
+} from "../../hooks";
+import { BigNumber, utils } from "ethers";
 
-export const DBSCard: FC<DragonBallSuperCard> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  id,
-  uri,
-  accountAddress,
-}) => {
+export const DBSCard: FC<MintedNFT> = ({
+  tokenId,
+  seller,
+  price,
+  forSale,
+}: MintedNFT) => {
   const [dbsNft, setDbsNft] = useState<DragonBallSuperNFT>();
+  const { tokenURI } = useTokenURI(BigNumber.from(tokenId));
   const classes = useStyles();
+  const dbsTokenInfo = useToken();
+  const { account } = useConnection();
+  const isNotOwner = account?.toLowerCase() !== seller.toLowerCase();
+  const { buyNFT, state } = useBuyNFT();
+  const { listNFTForSale } = useListNFTForSale();
 
   useEffect(() => {
     const fetchUri = async () => {
-      const fullUrl = fullIpfsUrl(uri);
-      const result = await fetch(fullUrl);
-      const nftResult = await result.json();
-      setDbsNft({
-        ...nftResult,
-        fileUrl: fullIpfsUrl(nftResult.fileUrl),
-      });
+      if (tokenURI) {
+        const fullUrl = fullIpfsUrl(tokenURI);
+        const result = await fetch(fullUrl);
+        const nftResult = await result.json();
+        setDbsNft({
+          ...nftResult,
+          price,
+          forSale,
+          fileUrl: fullIpfsUrl(nftResult.fileUrl),
+        });
+      }
     };
     fetchUri();
-  }, [uri]);
+  }, [tokenURI]);
 
   return (
     <Box
@@ -58,17 +78,51 @@ export const DBSCard: FC<DragonBallSuperCard> = ({
           <Typography variant="body2" color="text.secondary">
             {dbsNft?.message}
           </Typography>
-        </CardContent>
-        <CardActions>
-          {accountAddress && (
+          {dbsTokenInfo && dbsNft?.price && (
+            <Typography variant="body2" color="text.secondary">
+              Price {utils.formatEther(dbsNft.price.toString())}{" "}
+              {dbsTokenInfo.symbol}
+            </Typography>
+          )}
+          {seller && (
             <Typography
               gutterBottom
               variant="body2"
               color="primary"
               component="div"
             >
-              Owned by {shortenAddress(accountAddress)}
+              Owned by {shortenAddress(seller)}
             </Typography>
+          )}
+        </CardContent>
+        <CardActions>
+          {isNotOwner && tokenId && forSale && (
+            <Box>
+              <Button
+                variant="contained"
+                type="button"
+                color="secondary"
+                onClick={() => {
+                  buyNFT(tokenId);
+                }}
+              >
+                Buy
+              </Button>
+            </Box>
+          )}
+          {!isNotOwner && tokenId && !forSale && (
+            <Box>
+              <Button
+                variant="contained"
+                type="button"
+                color="primary"
+                onClick={() => {
+                  listNFTForSale(tokenId);
+                }}
+              >
+                List for Sale
+              </Button>
+            </Box>
           )}
         </CardActions>
       </Card>

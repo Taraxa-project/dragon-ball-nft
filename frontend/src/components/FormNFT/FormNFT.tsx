@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
-import { Box, Button, Paper, Typography } from '@mui/material';
-import { FormInputFile, FormInputText, FormTextareaInput } from '../form';
-import { useFormNFTEffects } from './FormNFT.effects';
-import { LoadingText } from '../LoadingText';
+import React, { FC } from "react";
+import { Box, Button, Paper, Typography } from "@mui/material";
+import { FormInputFile, FormInputText, FormTextareaInput } from "../form";
+import { useFormNFTEffects } from "./FormNFT.effects";
+import { LoadingText } from "../LoadingText";
+import { FormCheckbox } from "../form/FormCheckbox/FormCheckbox";
 
 export const FormNFT: FC = () => {
   const {
@@ -12,99 +13,108 @@ export const FormNFT: FC = () => {
     onFileChange,
     uploading,
     isMinting,
-    hasEnoughTokens,
   } = useFormNFTEffects();
 
   if (isMinting) {
-    return <LoadingText text='Minting NFT...' />;
+    return <LoadingText text="Minting NFT..." />;
   }
 
   return (
     <Paper
       sx={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'start',
-        alignItems: 'start',
-        borderRadius: '0',
-        marginTop: '20px',
-        marginBottom: '20px',
-        padding: '40px',
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "start",
+        alignItems: "start",
+        borderRadius: "0",
+        marginTop: "20px",
+        marginBottom: "20px",
+        padding: "40px",
       }}
     >
       <form
-        style={{ width: '100%' }}
-        autoComplete='off'
+        style={{ width: "100%" }}
+        autoComplete="off"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Typography variant='h3' color='secondary' align='center' mb={3}>
+        <Typography variant="h3" color="secondary" align="center" mb={3}>
           Mint your own Dragon Ball Super Card
         </Typography>
-        {!hasEnoughTokens && (
-          <Typography variant='h4' color='error' align='center' mb={3}>
-            Unfortunately, you don`t have enough DBS tokens to mint!
-          </Typography>
-        )}
         <Box
           sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'start',
-            alignItems: 'start',
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "start",
+            alignItems: "start",
             gap: 2,
           }}
         >
           <Box
             sx={{
-              width: '100%',
+              width: "100%",
             }}
           >
             <FormInputFile
               isLoading={uploading}
-              name='fileUrl'
+              name="fileUrl"
               control={control}
-              label='Upload your Dragon Ball Super Image on IPFS'
-              accept='image/*'
-              id='upload-nft-image'
-              buttonText='Upload image'
+              label="Upload your Dragon Ball Super Image on IPFS"
+              accept="image/*"
+              id="upload-nft-image"
+              buttonText="Upload image"
               valueChanged={onFileChange}
-              disabled={!hasEnoughTokens}
             />
           </Box>
-          <Box style={{ width: '100%' }}>
+          <Box style={{ width: "100%" }}>
             <FormInputText
-              name='name'
+              name="name"
               control={control}
-              label='Name'
-              type='text'
-              disabled={!hasEnoughTokens}
+              label="Name"
+              type="text"
             />
           </Box>
-          <Box style={{ width: '100%' }}>
+          <Box style={{ width: "100%" }}>
             <FormTextareaInput
-              name='message'
+              name="message"
               control={control}
-              label='Message'
+              label="Message"
               rows={4}
-              disabled={!hasEnoughTokens}
+            />
+          </Box>
+          <Box style={{ width: "100%" }}>
+            <FormInputText
+              name="price"
+              control={control}
+              label="Price"
+              type="number"
             />
           </Box>
           <Box
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
+            display="flex"
+            gap="2"
+            alignItems="center"
+          >
+            <Typography variant="body1" color="secondary">
+              List for sale
+            </Typography>
+            <FormCheckbox
+              name="listForSale"
+              control={control}
+              label="List for sale"
+            />
+          </Box>
+          <Box
+            style={{ width: "100%" }}
             sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'start',
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "start",
             }}
           >
-            <Button
-              variant='contained'
-              type='submit'
-              color='primary'
-              disabled={!hasEnoughTokens}
-            >
+            <Button variant="contained" type="submit" color="primary">
               Mint
             </Button>
           </Box>

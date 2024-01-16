@@ -32,6 +32,5 @@ if (ipfsSecret && ipfsProject && ipfsUseAuth === "true") {
     auth,
   };
 }
-console.log("🚀 ~ ipfsOptions:", ipfsOptions);
 
 export const ipfsClient = create(ipfsOptions);

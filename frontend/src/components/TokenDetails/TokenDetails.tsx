@@ -1,23 +1,18 @@
 import React, { FC, useEffect, useState, useRef } from "react";
 import {
-  useMintPrice,
-  useMintEnabled,
   useMintedCount,
-  useEnableMint,
   useConnection,
   useTokenBalance,
   useToken,
   useTaraBalance,
 } from "../../hooks";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { tokenAddress, ledgerAddress } from "../../constants";
 import { formatUnits } from "@ethersproject/units";
 
-export const TestDapp: FC = () => {
+export const TokenDetails: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const mountedRef = useRef(true);
-
-  const send = useEnableMint();
 
   const { account } = useConnection();
   const dbsTokenInfo = useToken();
@@ -25,9 +20,7 @@ export const TestDapp: FC = () => {
   const { balance: tokenBalance } = useTokenBalance(tokenAddress);
   const { balance: userBalance } = useTaraBalance();
   const { balance: nftBalance } = useTokenBalance(ledgerAddress);
-  const { mintPrice } = useMintPrice();
   const { mintedCount } = useMintedCount();
-  const { mintEnabled } = useMintEnabled();
 
   useEffect(() => {
     setIsConnected(account !== undefined);
@@ -67,13 +60,10 @@ export const TestDapp: FC = () => {
                 .replace(/0+$/, "")}
             </Typography>
           )}
-          {mintPrice && (
-            <Typography>Mint Price: {formatUnits(mintPrice, 18)}</Typography>
-          )}
+
           {!!mintedCount && (
             <Typography>Mint count: {mintedCount.toString()}</Typography>
           )}
-          <Typography>{`Mint Enabled: ${mintEnabled}`}</Typography>
 
           <Box
             sx={{
@@ -83,11 +73,7 @@ export const TestDapp: FC = () => {
               gap: "20px",
               alignItems: "center",
             }}
-          >
-            <Button variant="contained" onClick={() => send(!mintEnabled)}>
-              {mintEnabled ? "Disable Minting" : "Enable Minting"}
-            </Button>
-          </Box>
+          ></Box>
         </>
       )}
 

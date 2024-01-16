@@ -1,20 +1,22 @@
 import { useCallback, useState } from "react";
 import { useContracts } from "./useContracts";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 
-export const useMint = () => {
+export const useUpdateSalePrice = () => {
   const { ledgerContract } = useContracts();
   const [state, setState] = useState({ status: "None", error: "" });
 
-  const mint = useCallback(
-    async (url: string, price: number, listForSale: boolean) => {
+  const updateSalePrice = useCallback(
+    async (tokenId: number, newPriceInCommunityTokens: BigNumber) => {
       if (!ledgerContract) {
         setState({ status: "Fail", error: "Contract not available" });
         return;
       }
       try {
-        const priceInWei = ethers.utils.parseUnits(price.toString(), "ether");
-        const tx = await ledgerContract.mint(url, priceInWei, listForSale);
+        const tx = await ledgerContract.updateSalePrice(
+          tokenId,
+          newPriceInCommunityTokens
+        );
         setState({ status: "Mining", error: "" });
         await tx.wait();
         setState({ status: "Success", error: "" });
@@ -26,5 +28,5 @@ export const useMint = () => {
     [ledgerContract]
   );
 
-  return { mint, state };
+  return { updateSalePrice, state };
 };

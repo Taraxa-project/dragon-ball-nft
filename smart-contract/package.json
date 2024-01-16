@@ -11,7 +11,6 @@
     "coverage": "yarn run hardhat coverage",
     "compile": "yarn run hardhat compile --network local",
     "docgen": "yarn run hardhat docgen",
-    "deploy-token-testnet": "env DEBUG='@openzeppelin:*' TS_NODE_TRANSPILE_ONLY=1 npx hardhat run --network testnet ./scripts/deploy_token.ts",
     "deploy-local": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat run --network local ./scripts/deploy.ts",
     "deploy-mainnet": "env DEBUG='@openzeppelin:*' TS_NODE_TRANSPILE_ONLY=1 npx hardhat run --network mainnet ./scripts/deploy.ts",
     "deploy-testnet": "env DEBUG='@openzeppelin:*' TS_NODE_TRANSPILE_ONLY=1 npx hardhat run --network testnet ./scripts/deploy.ts",

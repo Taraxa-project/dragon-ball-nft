@@ -1,20 +1,18 @@
 import { useCallback, useState } from "react";
 import { useContracts } from "./useContracts";
-import { ethers } from "ethers";
 
-export const useMint = () => {
+export const useListNFTForSale = () => {
   const { ledgerContract } = useContracts();
   const [state, setState] = useState({ status: "None", error: "" });
 
-  const mint = useCallback(
-    async (url: string, price: number, listForSale: boolean) => {
+  const listNFTForSale = useCallback(
+    async (tokenId: number) => {
       if (!ledgerContract) {
         setState({ status: "Fail", error: "Contract not available" });
         return;
       }
       try {
-        const priceInWei = ethers.utils.parseUnits(price.toString(), "ether");
-        const tx = await ledgerContract.mint(url, priceInWei, listForSale);
+        const tx = await ledgerContract.listNFTForSale(tokenId);
         setState({ status: "Mining", error: "" });
         await tx.wait();
         setState({ status: "Success", error: "" });
@@ -26,5 +24,5 @@ export const useMint = () => {
     [ledgerContract]
   );
 
-  return { mint, state };
+  return { listNFTForSale, state };
 };

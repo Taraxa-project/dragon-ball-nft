@@ -1,15 +1,14 @@
-import { Box } from '@mui/material';
-import React, { FC } from 'react';
-import { MintContainer, Hero, MintDetails, DBSCardList } from '../components';
+import { Box } from "@mui/material";
+import React, { FC } from "react";
+import { Hero, MintDetails, DBSCardList } from "../components";
 
 export const Home: FC = () => {
   return (
     <div>
       <Hero />
-      <Box sx={{ padding: '20px' }}>
+      <Box sx={{ padding: "20px" }}>
         <MintDetails />
-        <MintContainer />
-        <DBSCardList />
+        <DBSCardList owner={false} />
       </Box>
     </div>
   );

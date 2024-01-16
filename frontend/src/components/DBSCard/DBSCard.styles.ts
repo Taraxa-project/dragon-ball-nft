@@ -3,10 +3,14 @@ import { makeStyles } from "@mui/styles";
 export const useStyles = makeStyles(() => {
   return {
     media: {
-      height: "400px",
+      height: "450px",
     },
     content: {
-      height: "100px",
+      height: "180px",
+      display: "flex",
+      flexDirection: "column",
+      gap: "15px",
+      justifyContent: "start",
     },
   };
 });
